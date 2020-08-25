@@ -60,10 +60,10 @@ class PorteFeuille:
         if self.loss_level == 3:
             self.balance_3(senders, receivers)
 
-        self.history.append(("now",self.total))
+        self.history.append(self.total)
         print("....................................")
     def getHistory(self, start=None, end=None):
-        print("getHistory")
+        return self.history
 
     def updateValues(self):
         self.total = 0
