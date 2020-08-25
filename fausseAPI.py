@@ -30,17 +30,21 @@ class FausseAPI:
                 print("{0}: {1}$".format(key, self.qty[apiKey][key]*self.values[apiKey]))
 
     def changeValuesRandom(self, ecart=100, med=10):
+        chng={}
         for key in self.values:
-            chng = (randint(-ecart,ecart)+med)/1000
             tendance=""
-            if chng>=0:
-                tendance="gagné"
-            else:
-                tendance="perdu"
             for monnaie in self.values[key]:
-                self.values[key][monnaie] += chng * self.values[key][monnaie]
+                if not monnaie in chng.keys():
+                    chng[monnaie] = (randint(-ecart,ecart)+med)/1000
+
+                if chng[monnaie]>=0:
+                    tendance="gagné"
+                else:
+                    tendance="perdu"
+
+                self.values[key][monnaie] += chng[monnaie] * self.values[key][monnaie]
                 if self.verbose:
-                    print("Le {0} a {1} {2}%! Maintenant il vaut {3}$!".format(key, tendance, chng*100, self.values[key][monnaie]))
+                    print("{4}: Le {0} a {1} {2}%! Maintenant il vaut {3}$!".format(monnaie, tendance, chng[monnaie]*100, self.values[key][monnaie], key))
 
     def setMarketHistory(self, start = 1535202562, stop = 1598360962, ecart=100, med=10):
         self.marketHistory = []
@@ -55,6 +59,11 @@ class FausseAPI:
             print(self.marketHistory)
         for key in self.values:
             self.step_(key)
+    def printMarketHistory(self):
+        for couple in self.marketHistory:
+            _, values = couple
+            for key in values:
+                print("{0}:    {1}".format(key,values[key]))
     def step_(self, apiKey):
         if self.step[apiKey]>=len(self.marketHistory):
             return -1
