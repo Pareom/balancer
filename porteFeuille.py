@@ -1,12 +1,13 @@
 import time
 
 class PorteFeuille:
-    def __init__(self, api, perGoal=[{"monnaie":"BTC","goal":0.8},{"monnaie":"BNB","goal":0.2}], loss_level=3, simulation=True):
+    def __init__(self, api, apiKey, perGoal=[{"monnaie":"BTC","goal":0.8},{"monnaie":"BNB","goal":0.2}], loss_level=3, simulation=True):
         self.api = api
         self.perGoal = perGoal
         self.history = []
         self.perActual = []
         self.total = 0
+        self.apiKey = apiKey
         self.simulation = simulation
         if loss_level < 1:
             self.loss_level = 1
@@ -32,15 +33,12 @@ class PorteFeuille:
     def balance_3(self, senders, receivers):
         for sender in senders:
             if sender["monnaie"]!="BNB":#D'abord verifier si toutes les monnaies sont compatibles
-                toSend = (sender["actual"]-sender["goal"])*sender["qty"]/sender["actual"]
-                toSendUSD = self.api.send(sender["monnaie"], "BNB", toSend)
-                print("Envoie de {0} {1} à BNB, cela fait {2}$".format(toSend, sender["monnaie"], toSendUSD))#TODO
+                toSendUSD = (sender["actual"]-sender["goal"])*sender["qty"]/sender["actual"]*sender["usdVal"]
+                self.api.send(sender["monnaie"], "BNB", toSendUSD, self.apiKey)
         for receiver in receivers:
             if receiver["monnaie"]!="BNB":#D'abord verifier si toutes les monnaies sont compatibles
-                toSend = (receiver["goal"]-receiver["actual"])*receiver["qty"]/receiver["actual"]
-                toSendUSD = self.api.send("BNB", receiver["monnaie"], toSend)
-                print("Envoie de {0} BNB à {1}, cela fait {2}$".format(toSend, receiver["monnaie"], toSendUSD))#TODO
-
+                toSendUSD = (receiver["goal"]-receiver["actual"])*receiver["qty"]/receiver["actual"]*receiver["usdVal"]
+                self.api.send("BNB", receiver["monnaie"], toSendUSD, self.apiKey)
 
     def balance(self):
         self.update()
@@ -54,6 +52,7 @@ class PorteFeuille:
                 senders.append(crypto)
             else:
                 print("{0}: G:{1}% Act:{2}% ==> Pas de transfert su cette monnaie".format(crypto["monnaie"],crypto["goal"]*100,crypto["actual"]*100))
+
         if self.loss_level == 1:
             self.balance_1(senders, receivers)
         if self.loss_level == 2:
@@ -62,7 +61,7 @@ class PorteFeuille:
             self.balance_3(senders, receivers)
 
         self.history.append(("now",self.total))
-
+        print("....................................")
     def getHistory(self, start=None, end=None):
         print("getHistory")
 
@@ -70,7 +69,7 @@ class PorteFeuille:
         self.total = 0
         for i in range(len(self.crypto)):
             value = self.api.getValue(self.crypto[i])
-            self.crypto[i]["qty"] = self.api.getQuantity(self.crypto[i])
+            self.crypto[i]["qty"] = self.api.getQuantity(self.crypto[i], self.apiKey)
             self.crypto[i]["usdVal"] = self.crypto[i]["qty"] * value
             self.total+= self.crypto[i]["usdVal"]
 
