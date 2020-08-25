@@ -33,11 +33,15 @@ class PorteFeuille:
     def balance_3(self, senders, receivers):
         for sender in senders:
             if sender["monnaie"]!="BNB":#D'abord verifier si toutes les monnaies sont compatibles
-                toSendUSD = (sender["actual"]-sender["goal"])*sender["qty"]/sender["actual"]*sender["usdVal"]
+                toSendUSD = (sender["actual"]-sender["goal"])*sender["usdVal"]/sender["actual"]
+                if sender["actual"]-sender["goal"] <0:
+                    print("Erreur sender: {0}%".format(sender["actual"]-sender["goal"]))
                 self.api.send(sender["monnaie"], "BNB", toSendUSD, self.apiKey)
         for receiver in receivers:
             if receiver["monnaie"]!="BNB":#D'abord verifier si toutes les monnaies sont compatibles
-                toSendUSD = (receiver["goal"]-receiver["actual"])*receiver["qty"]/receiver["actual"]*receiver["usdVal"]
+                toSendUSD = (receiver["goal"]-receiver["actual"])*receiver["usdVal"]/receiver["actual"]
+                if receiver["goal"]-receiver["actual"] <0:
+                    print("Erreur receive: {0}%".format(receiver["goal"]-receiver["actual"]))
                 self.api.send("BNB", receiver["monnaie"], toSendUSD, self.apiKey)
 
     def balance(self):
@@ -59,10 +63,9 @@ class PorteFeuille:
             self.balance_2(senders, receivers)
         if self.loss_level == 3:
             self.balance_3(senders, receivers)
-
-        self.history.append(self.total)
         print("....................................")
     def getHistory(self, start=None, end=None):
+        self.update()
         return self.history
 
     def updateValues(self):
@@ -72,8 +75,9 @@ class PorteFeuille:
             self.crypto[i]["qty"] = self.api.getQuantity(self.crypto[i], self.apiKey)
             self.crypto[i]["usdVal"] = self.crypto[i]["qty"] * value
             self.total+= self.crypto[i]["usdVal"]
-
+        print("Total: {0}".format(self.total))
     def update(self):
         self.updateValues()
         for i in range(len(self.crypto)):
             self.crypto[i]["actual"] = self.crypto[i]["usdVal"]/self.total
+        self.history.append(self.total)
