@@ -18,7 +18,6 @@ class FausseAPI:
         return self.qty[apiKey][crypto["monnaie"]]
 
     def getValue(self, crypto, apiKey):
-        print(self.values)
         return self.values[apiKey][crypto["monnaie"]]
 
     def send(self, _from, _to, value, apiKey):
@@ -43,7 +42,7 @@ class FausseAPI:
                 if self.verbose:
                     print("Le {0} a {1} {2}%! Maintenant il vaut {3}$!".format(key, tendance, chng*100, self.values[key][monnaie]))
 
-    def setMarketHistory(self, start = 1535202562, stop = 1598360962):
+    def setMarketHistory(self, start = 1535202562, stop = 1598360962, ecart=100, med=10):
         self.marketHistory = []
         while start<stop:
             self.marketHistory.append((deepcopy(start), deepcopy(self.values)))
@@ -59,7 +58,8 @@ class FausseAPI:
     def step_(self, apiKey):
         if self.step[apiKey]>=len(self.marketHistory):
             return -1
-        date, self.values[apiKey] = self.marketHistory[self.step[apiKey]]
+        date, val = self.marketHistory[self.step[apiKey]]
+        self.values[apiKey] = val[apiKey]
         if self.verbose:
             print(self.values[apiKey])
         self.step[apiKey]+=1

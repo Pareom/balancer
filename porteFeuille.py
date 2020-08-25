@@ -8,7 +8,6 @@ class PorteFeuille:
         self.perActual = []
         self.total = 0
         self.apiKey = apiKey
-        print(apiKey)
         self.simulation = simulation
         self.verbose = verbose
         if loss_level < 1:

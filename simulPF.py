@@ -13,18 +13,19 @@ class SimulatorPF(Thread):
         Thread.__init__(self)
         self.api = api
         self.date = date
+        self.apiKey = apiKey
         self.pf = PorteFeuille(self.api, apiKey, verbose=verbose)
 
     def run(self):
         """Code à exécuter pendant l'exécution du thread."""
-        while self.date!=-1:
+        while self.date != -1:
             self.pf.balance(self.date)
-            self.date = self.api.step_()
+            self.date = self.api.step_(self.apiKey)
         print(self.pf.getGain()*100-100)
 
 threads = []
 qty={}
-date = 1598360962-5*604800-1
+date = 1535202562
 for i in range(10):
     qty[i] = {"BTC":1, "BNB":9}
 api = FausseAPI(qty=qty, verbose=False)
