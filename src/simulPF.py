@@ -1,9 +1,9 @@
 import random
 import sys
 import time
-from fausseAPI import FausseAPI
 from threading import Thread
-from porteFeuille import PorteFeuille
+from src.fausseAPI import FausseAPI
+from src.porteFeuille import PorteFeuille
 
 class SimulatorPF(Thread):
 
@@ -25,10 +25,11 @@ class SimulatorPF(Thread):
 
 threads = []
 qty={}
+values = {"BTC":2, "BNB":200}
 date = 1535202562
 for i in range(10):
     qty[i] = {"BTC":1, "BNB":9}
-api = FausseAPI(qty=qty, verbose=False)
+api = FausseAPI(qty=qty, values=values, verbose=False)
 api.setMarketHistory(start = date)
 for i in range(10):
     threads.append(SimulatorPF(False, api, i, date))

@@ -1,16 +1,16 @@
-from porteFeuille import PorteFeuille
+from src.porteFeuille import PorteFeuille
 from random import *
 from copy import deepcopy
 
 #qty = {"aZeR":{"BTC":1, "BNB":9}}
 class FausseAPI:
-    def __init__(self, qty, verbose=False):
+    def __init__(self, qty, values, verbose=False):
         self.qty=qty
         self.step={}
         self.values={}
         self.marketHistory = {}
         for key in qty:
-            self.values[key]={"BTC":2, "BNB":200}
+            self.values[key]= values
             self.step[key] = 0
         self.verbose = verbose
 

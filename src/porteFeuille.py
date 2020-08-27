@@ -1,7 +1,7 @@
 import time
 
 class PorteFeuille:
-    def __init__(self, api, apiKey, perGoal=[{"monnaie":"BTC","goal":0.8},{"monnaie":"BNB","goal":0.2}], loss_level=3, simulation=True, verbose=True):
+    def __init__(self, api, apiKey, perGoal={"BTC":0.8, "BNB":0.2}, loss_level=3, simulation=True, verbose=False):
         self.api = api
         self.perGoal = perGoal
         self.history = {}
@@ -19,11 +19,11 @@ class PorteFeuille:
 
     def initCrypto(self):
         self.crypto=[]
-        for val in self.perGoal:
-            self.crypto.append({"monnaie":val["monnaie"],\
+        for key in self.perGoal:
+            self.crypto.append({"monnaie":key,\
                                 "qty":0,\
                                 "usdVal":0,\
-                                "goal":val["goal"],\
+                                "goal":self.perGoal[key],\
                                 "actual":0})
         self.update()
 
